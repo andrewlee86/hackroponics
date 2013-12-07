@@ -77,5 +77,5 @@ void loop()
       }
     }
   }
-  delay(60);
+  delay(1000);
 }
