@@ -3,10 +3,8 @@
 #include <LiquidCrystal_I2C.h>
 
 int DS18S20_Pin = 2; //DS18S20 Signal pin on digital 2
-LiquidCrystal_I2C lcd(0x20,20,4);  // set the LCD address to 0x20 for a 16 chars and 2 line display
-
-//Temperature chip i/o
-OneWire ds(DS18S20_Pin);  // on digital pin 2
+OneWire ds(DS18S20_Pin); //Temperature chip i/o
+LiquidCrystal_I2C lcd(0x20,20,4);  // set the LCD address to 0x20 for a 20 chars and 4 line display
 
 void setup()
 {
@@ -100,5 +98,5 @@ float getTemp(){
   float TemperatureSum = tempRead / 16;
   
   return TemperatureSum;
-  
 }
+
