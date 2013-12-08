@@ -45,6 +45,9 @@ void lcdSetup() {
 }
 
 void webServerSetup() {
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for Leonardo only
+  }
   // start the Ethernet connection and the server:
   Ethernet.begin(mac, ip);
   server.begin();
