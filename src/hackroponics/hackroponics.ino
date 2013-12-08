@@ -92,19 +92,21 @@ void printWaterLevel(int row, int height) {
   lcd.setCursor(0, row);
   lcd.print("Water: ");
   lcd.print(height);
+  lcd.print(" cm");
 }
 
 void printTemperature(int row, float temp) {
   lcd.setCursor(0, row);
   lcd.print("Temp: ");
   lcd.print(temp, 1);  // show 1 decimal place
-  lcd.print("C");  
+  lcd.print(" C");  
 }
 
 void printLux(int row, int lux) {
   lcd.setCursor(0, row);
-  lcd.print("Lux: ");
+  lcd.print("Light: ");
   lcd.print(lux);
+  lcd.print(" lux");
 }
 
 void printPH(int row, float ph) {
