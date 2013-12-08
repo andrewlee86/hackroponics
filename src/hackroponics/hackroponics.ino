@@ -2,27 +2,42 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
+// # Connection:
+// #       Pin12 (Arduino) -> Pin 1 VCC (URM V3.2)
+// #       GND (Arduino)   -> Pin 2 GND (URM V3.2)
+// #       Pin 0 (Arduino) -> Pin 9 TXD (URM V3.2)
+// #       Pin 1 (Arduino) -> Pin 8 RXD (URM V3.2)
+// #
+
 #if defined(ARDUINO) && ARDUINO >= 100
 #define printByte(args)  write(args);
 #else
 #define printByte(args)  print(args,BYTE);
 #endif
 
-int DS18S20_Pin = 2; //DS18S20 Signal pin on digital 2
-OneWire ds(DS18S20_Pin); //Temperature chip i/o
+int URPower = 12; // Ultrasound power pin
+int USValue = 0;
+uint8_t DMcmd[4] = { 0x22, 0x00, 0x00, 0x22 }; //distance measure command
+
+OneWire ds(2); //Temperature chip i/o on digital pin 2
 LiquidCrystal_I2C lcd(0x20,20,4);  // set the LCD address to 0x20 for a 20 chars and 4 line display
 
-void setup()
-{
+void setup() {
   Serial.begin(9600); // open serial port, set the baud rate to 9600 bps
+  sensorSetup();
   lcd.init();
   lcd.backlight();
   printSplash(5000);
   lcd.clear();
 }
 
-void loop()
-{
+void sensorSetup() {
+  pinMode(URPower, OUTPUT);
+  digitalWrite(URPower, HIGH); // Set to High
+  delay(200); 
+}
+
+void loop() {
   String height = "-";
   float temp = getTemp();
   int lux = analogRead(2);   //connect grayscale sensor to Analog 2  
@@ -34,6 +49,41 @@ void loop()
   printTemperature(1, temp);
   printLux(2, lux);
   printPH(3, ph);  
+  delay(2000);
+}
+
+// FIXME merge this
+void sensorLoop() {
+  //Sending distance measure command :  0x22, 0x00, 0x00, 0x22 ;
+  for(int i=0; i<4; i++) {
+    Serial.write(DMcmd[i]);
+  }
+  
+  delay(40); //delay for 75 ms
+  unsigned long timer = millis();
+  while(millis() - timer < 30) {
+    if (Serial.available()>0) {
+      int header=Serial.read(); //0x22
+      int highbyte=Serial.read();
+      int lowbyte=Serial.read();
+      int sum=Serial.read();//sum
+
+      if (header == 0x22) {
+        if (highbyte==255) {
+          USValue=65525;  //if highbyte =255 , the reading is invalid.
+        } else {
+          USValue = highbyte*255+lowbyte;
+        }
+        
+        Serial.print("Distance=");
+        Serial.println(USValue);
+      } else {
+        while(Serial.available())  byte bufferClear = Serial.read();
+        break;
+      }
+    }
+  }
+  
   delay(2000);
 }
 
@@ -97,9 +147,8 @@ void printPH(int row, String ph) {
   lcd.print(ph);
 }
 
-float getTemp(){
-  //returns the temperature from one DS18S20 in DEG Celsius
-
+//returns the temperature from one DS18S20 in DEG Celsius
+float getTemp() {
   byte data[12];
   byte addr[8];
 
