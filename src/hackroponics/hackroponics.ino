@@ -61,6 +61,8 @@ void loop() {
   printToLCD(height, temp, lux, ph);
   
   printToWebServer(height, temp, lux, ph);
+  
+  delay(1500);
 }
 
 void printToLCD(int height, float temp, int lux, float ph) {
@@ -79,7 +81,7 @@ void printToWebServer(int height, float temp, int lux, float ph) {
     boolean currentLineIsBlank = true;
     
     while (client.connected()) {
-      printToLCD();
+      printToLCD(height, temp, lux, ph);
       
       if (client.available()) {
         char c = client.read();
