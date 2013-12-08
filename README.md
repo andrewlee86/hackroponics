@@ -5,6 +5,8 @@ Smart Hydroponics @ Hackyizu 2013
 
 
 ### Parts List
+Hardware provided by DFRobot (http://www.dfrobot.com/)
+
 - DFRduino UNO R3
 - DFRduino Ethernet Shield (Support Mega and Micro SD)
 - IO Expansion Shield for Arduino V7
