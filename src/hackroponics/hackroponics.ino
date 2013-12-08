@@ -62,9 +62,10 @@ void loop() {
   int lux = getLux();
   float ph = getPH();
   
-  printToLCD(height, temp, lux, ph);
-  
+  printToLCD(height, temp, lux, ph);  
   printToWebServer(height, temp, lux, ph);
+  
+  delay(1500);
 }
 
 void printToLCD(int height, float temp, int lux, float ph) {
@@ -72,8 +73,7 @@ void printToLCD(int height, float temp, int lux, float ph) {
   printWaterLevel(0, height);
   printTemperature(1, temp);
   printLux(2, lux);
-  printPH(3, ph);
-  delay(1500);
+  printPH(3, ph);  
 }
 
 void printToWebServer(int height, float temp, int lux, float ph) {
