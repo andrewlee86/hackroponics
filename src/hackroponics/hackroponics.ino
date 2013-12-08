@@ -53,6 +53,7 @@ void webServerSetup() {
   server.begin();
   Serial.print("server is at ");
   Serial.println(Ethernet.localIP());
+  EthernetClient client = server.available();
 }
 
 void loop() {
@@ -64,8 +65,6 @@ void loop() {
   printToLCD(height, temp, lux, ph);
   
   printToWebServer(height, temp, lux, ph);
-  
-  delay(1500);
 }
 
 void printToLCD(int height, float temp, int lux, float ph) {
@@ -74,6 +73,7 @@ void printToLCD(int height, float temp, int lux, float ph) {
   printTemperature(1, temp);
   printLux(2, lux);
   printPH(3, ph);
+  delay(1500);
 }
 
 void printToWebServer(int height, float temp, int lux, float ph) {
@@ -83,8 +83,7 @@ void printToWebServer(int height, float temp, int lux, float ph) {
     // an http request ends with a blank line
     boolean currentLineIsBlank = true;
     
-    while (client.connected()) {
-      printToLCD(height, temp, lux, ph);
+    while (client.connected()) {      
       
       if (client.available()) {
         char c = client.read();
@@ -97,11 +96,11 @@ void printToWebServer(int height, float temp, int lux, float ph) {
           client.println("HTTP/1.1 200 OK");
           client.println("Content-Type: text/html");
           client.println("Connection: close");  // the connection will be closed after completion of the response
-          client.println("Refresh: 5");  // refresh the page automatically every 5 sec
+          client.println("Refresh: 1");  // refresh the page automatically every 1 sec
           client.println();
           client.println("<!DOCTYPE HTML>");
           client.println("<html>");
-            client.print("Water level: ");
+          client.print("Water level: ");
             client.print(height);
             client.println("<br />");       
             client.print("Temperature: ");
@@ -112,7 +111,7 @@ void printToWebServer(int height, float temp, int lux, float ph) {
             client.println("<br />");       
             client.print("pH: ");
             client.print(ph);
-            client.println("<br />");       
+          client.println("<br />");       
           client.println("</html>");
           break;
         }
@@ -126,7 +125,6 @@ void printToWebServer(int height, float temp, int lux, float ph) {
         }
       }
       
-      delay(1500);
     }
     
     // give the web browser time to receive the data
@@ -134,6 +132,9 @@ void printToWebServer(int height, float temp, int lux, float ph) {
     // close the connection:
     client.stop();
     Serial.println("client disconnected");
+  }
+  else{
+    Serial.println("client not avaialble");
   }
 }
 
@@ -165,7 +166,7 @@ void printSplash(int msDelay) {
   lcd.printByte(6);
   lcd.setCursor(0, 2);
   lcd.printByte(6);
-  lcd.print("       v0.2       ");
+  lcd.print("       v0.3       ");
   lcd.printByte(6);
   lcd.setCursor(0, 3);
   for(int i = 0;i < 20; i++)  lcd.printByte(6);
